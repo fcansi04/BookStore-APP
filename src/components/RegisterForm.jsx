@@ -10,13 +10,14 @@ import {
   Button,
   InputAdornment,
 } from "@mui/material";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { Api, Visibility, VisibilityOff } from "@mui/icons-material";
 import { useState } from "react";
 import {
   Link as RouterLink,
   useOutletContext,
   useNavigate,
 } from "react-router-dom";
+import { api } from "../axios/api.js";
 import { Link as MuiLink } from "@mui/material";
 import SnackBar from "./SnackBar";
 const RegisterForm = () => {
@@ -61,32 +62,22 @@ const RegisterForm = () => {
     };
     try {
       setLoading(true);
-      const response = await fetch(`${BaseUrl}/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password, person }),
+      const response = await api.post("register", {
+        username,
+        password,
+        person,
       });
-      const data = await response.json();
 
-      if (response.ok) {
-        setError(null);
-        setOpenSnackBar(true);
-        setSnackBarMessage("Başarıyla kayıt oldunuz");
-        setSnackBarSeverity("success");
-        setTimeout(() => {
-          navigate("/");
-        }, 1200);
-      }
-      if (!response.ok) {
-        setError(data.message);
-        setOpenSnackBar(true);
-        setSnackBarMessage(data.message);
-        setSnackBarSeverity("error");
-      }
+      setError(null);
+      setOpenSnackBar(true);
+      setSnackBarMessage("Başarıyla kayıt oldunuz");
+      setSnackBarSeverity("success");
+      setTimeout(() => {
+        navigate("/");
+      }, 1200);
     } catch (err) {
       console.log(err);
+      console.log(data.message);
       setOpenSnackBar(true);
       setSnackBarMessage(err.message);
       setSnackBarSeverity("error");

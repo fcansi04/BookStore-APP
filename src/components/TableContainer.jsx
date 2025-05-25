@@ -18,6 +18,7 @@ import {
 } from "@tanstack/react-table";
 import { useAuth } from "../contexts/AuthContext";
 import SnackBar from "./SnackBar";
+import { api } from "../axios/api";
 
 const columnHelper = createColumnHelper();
 
@@ -83,37 +84,24 @@ const columns = [
           onClick={async () => {
             try {
               const BaseUrl = import.meta.env.VITE_BASE_URL;
-              const response = await fetch(`${BaseUrl}/addItemToCart`, {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  _id: user._id,
-                  book,
-                }),
+              const response = await api.post("/addItemToCart", {
+                _id: user._id,
+                book,
               });
-              if (!response.ok) {
-                console.log(response.status);
-                const errorData = await response.json();
-                console.log(errorData.message);
-                setSnackBarMessage(errorData.message);
-                setSnackBarSeverity("error");
-                setOpenSnackBar(true);
-              } else {
-                setSnackBarMessage("Ürün başarıyla sepete eklendi!");
-                setSnackBarSeverity("success");
-                setOpenSnackBar(true);
-                fetchCartItems();
-              }
 
-              const data = await response.json();
+              setSnackBarMessage("Ürün başarıyla sepete eklendi!");
+              setSnackBarSeverity("success");
+              setOpenSnackBar(true);
+              fetchCartItems();
+
+              const data = response.data;
               console.log(data);
             } catch (error) {
               console.log(error);
               setSnackBarMessage("Bir hata oluştu: " + data.message);
               setSnackBarSeverity("error");
               setOpenSnackBar(true);
+              console.log(response.status);
             }
           }}
           variant="contained"

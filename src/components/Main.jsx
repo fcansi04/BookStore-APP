@@ -15,16 +15,10 @@ const Main = () => {
   const BaseUrl = import.meta.env.VITE_BASE_URL;
   const fetchCartItems = async () => {
     try {
-      const response = await fetch(`${BaseUrl}/getBooksInCart`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          _id: user._id,
-        }),
+      const response = await fetch("/getBooksInCart", {
+        _id: user._id,
       });
-      const data = await response.json();
+      const data = response.data;
       setCartItems(data);
     } catch (error) {
       console.log(error);

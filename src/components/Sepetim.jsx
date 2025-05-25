@@ -5,6 +5,7 @@ import { useAuth } from "../contexts/AuthContext";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SnackBar from "./SnackBar";
 import { useOutletContext } from "react-router-dom";
+import { api } from "../axios/api";
 const columns = [
   {
     field: "ISBN",
@@ -159,36 +160,24 @@ const Sepetim = () => {
     }
 
     try {
-      const response = await fetch(`${BaseUrl}/buyBooks`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          _id: user._id,
-          totalPrice: totalPrice,
-        }),
+      const response = await api.post("buyBooks", {
+        _id: user._id,
+        totalPrice: totalPrice,
       });
-      const data = await response.json();
-      if (response.ok) {
-        setOpenSnackBar(true);
-        setSnackBarSeverity("success");
-        setSnackBarMessage("Siparişiniz başarıyla oluşturuldu");
-        fetchCartItems();
-        setBalance(balance - totalPrice);
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            ...user,
-            balance: balance,
-          })
-        );
-      } else {
-        setOpenSnackBar(true);
-        setSnackBarSeverity("error");
-        setSnackBarMessage("Bir hata oluştu");
-        console.log(data);
-      }
+      const data = response.data;
+
+      setOpenSnackBar(true);
+      setSnackBarSeverity("success");
+      setSnackBarMessage("Siparişiniz başarıyla oluşturuldu");
+      fetchCartItems();
+      setBalance(balance - totalPrice);
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          ...user,
+          balance: balance,
+        })
+      );
     } catch (error) {
       setSnackBarSeverity("error");
       console.log(error);
@@ -199,24 +188,13 @@ const Sepetim = () => {
 
   const handleDeleteFromCard = async () => {
     try {
-      const response = await fetch(`${BaseUrl}/removeBookFromCart`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          _id: user._id,
-          books: Array.from(rowSelectionModel.ids),
-        }),
+      const response = await api.post("removeBookFromCart", {
+        _id: user._id,
+        books: Array.from(rowSelectionModel.ids),
       });
-      if (response.ok) {
-        setSnackBarSeverity("success");
-        fetchCartItems();
-      } else {
-        setSnackBarSeverity("error");
-      }
-
-      const data = await response.json();
+      setSnackBarSeverity("success");
+      fetchCartItems();
+      const data = response.data;
       setOpenSnackBar(true);
       setSnackBarMessage(data.message);
     } catch (error) {

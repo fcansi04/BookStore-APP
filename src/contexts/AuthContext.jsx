@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import SnackBar from "../components/SnackBar";
-
+import { api } from "../axios/api";
 const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -27,38 +27,24 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     setLoading(true);
     try {
-      const response = await fetch(
-        "https://bookstore-backend-8bbr.onrender.com/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, password }),
-        }
-      );
-      const data = await response.json();
-      if (response.ok) {
-        localStorage.setItem("user", JSON.stringify(data.user));
+      const response = await api.post("/login", { email, password });
+      const data = response.data;
 
-        localStorage.setItem("token", data.token);
-        setUser(data.user);
-        setToken(data.token);
-        setOpenSnackBar(true);
-        setSnackBarMessage("Giriş yapıldı");
-        setSnackBarSeverity("success");
-        navigate("/main");
-      } else {
-        setErrorLogin(data.message);
-        setOpenSnackBar(true);
-        setSnackBarMessage(errorLogin);
-        setSnackBarSeverity("error");
-      }
+      localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem("token", data.token);
+      setUser(data.user);
+      setToken(data.token);
+      setOpenSnackBar(true);
+      setSnackBarMessage("Giriş yapıldı");
+      setSnackBarSeverity("success");
+      navigate("/main");
     } catch (err) {
-      setErrorLogin(err);
+      const errorMessage =
+        err.response?.data?.message || err.message || "Giriş hatası";
+      setErrorLogin(errorMessage);
       console.log(err);
       setOpenSnackBar(true);
-      setSnackBarMessage(errorLogin);
+      setSnackBarMessage(errorMessage);
       setSnackBarSeverity("error");
     } finally {
       setLoading(false);

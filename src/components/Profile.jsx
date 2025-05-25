@@ -16,44 +16,35 @@ const Profile = () => {
   const updateUser = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`${BaseUrl}/updateUserInfo`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await api.post("/updateUserInfo", {
+        _id: user._id,
+        user: {
+          email,
+          firstName,
+          lastName,
+          phone,
         },
-        body: JSON.stringify({
-          _id: user._id,
-          user: {
-            email,
-            firstName,
-            lastName,
-            phone,
-          },
-        }),
       });
-      const body = await response.json();
+
+      const body = response.data;
       setIsUpdated(body.message);
       console.log(body.message);
-      if (!response.ok) {
-        throw new Error("Failed to update user info");
-      } else {
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            ...user,
-            person: {
-              ...user.person,
-              firstName: firstName,
-              lastName: lastName,
-              email: email,
-              phone: phone,
-            },
-          })
-        );
-        setTimeout(() => {
-          setIsUpdated(false);
-        }, 2000);
-      }
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          ...user,
+          person: {
+            ...user.person,
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            phone: phone,
+          },
+        })
+      );
+      setTimeout(() => {
+        setIsUpdated(false);
+      }, 2000);
     } catch (error) {
       console.log(error);
     }
