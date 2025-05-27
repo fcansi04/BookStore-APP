@@ -5,6 +5,7 @@ import NavBar from "./NavBar";
 import { Box } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
+import { api } from "../axios/api";
 const Main = () => {
   const [isTableView, setIsTableView] = useState(false);
   const [sepetSize, setSepetSize] = useState(0);
@@ -13,9 +14,10 @@ const Main = () => {
   const [balance, setBalance] = useState(user.balance);
   const [cartItems, setCartItems] = useState([]);
   const BaseUrl = import.meta.env.VITE_BASE_URL;
+
   const fetchCartItems = async () => {
     try {
-      const response = await fetch("/getBooksInCart", {
+      const response = await api.post("/getBooksInCart", {
         _id: user._id,
       });
       const data = response.data;
