@@ -83,7 +83,6 @@ const columns = [
         <Button
           onClick={async () => {
             try {
-              const BaseUrl = import.meta.env.VITE_BASE_URL;
               const response = await api.post("/addItemToCart", {
                 _id: user._id,
                 book,
@@ -107,9 +106,9 @@ const columns = [
           variant="contained"
           color="success"
           sx={{ width: "100px" }}
-          disabled={cartItems.some((item) => item.ISBN === book.ISBN)}
+          disabled={cartItems?.some((item) => item.ISBN === book.ISBN)}
         >
-          {cartItems.some((item) => item.ISBN === book.ISBN)
+          {cartItems?.some((item) => item.ISBN === book.ISBN)
             ? "Eklendi"
             : "Ekle"}
         </Button>
